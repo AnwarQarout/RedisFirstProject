@@ -25,6 +25,22 @@ class TestRedis:
         else:
             return decoded_list_of_keys
 
+
+
+    """ Function to list all keys in a given pattern """
+
+    def get_keys(self, pattern):
+        list_of_keys = self.con.keys(pattern=pattern)
+        decoded_list_of_keys = []
+        for x in list_of_keys:
+            decoded_list_of_keys.append(x.decode())
+        if not decoded_list_of_keys:
+            return "No keys are set in Redis."
+        else:
+            return decoded_list_of_keys
+
+
+
     """ Function to delete a given key in Redist """
     def delete_key(self,key):
         if not self.con.exists(key):
@@ -39,16 +55,22 @@ class TestRedis:
 
     """ Function to create a key with a value in Redist"""
     def create_key(self,key,value):
-        self.con.set(key,value)
-
-
-    """ Function to list all keys in a given pattern """
-    def get_keys(self,pattern):
-        list_of_keys = self.con.keys(pattern=pattern)
-        decoded_list_of_keys = []
-        for x in list_of_keys:
-            decoded_list_of_keys.append(x.decode())
-        if not decoded_list_of_keys:
-            return "No keys are set in Redis."
+        key_value=self.get_key_value(key)
+        if key_value is not None:
+            str = ''
+            str = input("A key with that name already exists, with value ("+key_value+"), would you"
+                                                                            "like to overwrite it? (y/n)")
+            if str == 'y' or str == 'Y':
+                self.con.set(key,value)
+            else:
+                return
         else:
-            return decoded_list_of_keys
+            self.con.set(key,value)
+
+    """ Function to return the value of a key """
+    def get_key_value(self,key):
+        if (self.con.exists(key)):
+            key_value = self.con.get(key).decode()
+            return key_value
+        else:
+            return
