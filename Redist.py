@@ -5,9 +5,9 @@ class TestRedis:
 
 
     """ Main initialization function to establish the connection to Redis """
-    def __init__(self):
+    def __init__(self,host,port):
         try:
-            self.con = redis.Redis(host='localhost',port=6379,db=0)
+            self.con = redis.Redis(host=host,port=port,db=0)
         except redisError.ConnectionError:
             print("An error occured while connecting. Make sure the Redist server is on and working.")
             raise
@@ -57,13 +57,9 @@ class TestRedis:
     def create_key(self,key,value):
         key_value=self.get_key_value(key)
         if key_value is not None:
-            str = ''
-            str = input("A key with that name already exists, with value ("+key_value+"), would you"
-                                                                            "like to overwrite it? (y/n)")
-            if str == 'y' or str == 'Y':
-                self.con.set(key,value)
-            else:
-                return
+            print("A key with that name already exists, with value ("+key_value+").")
+            return
+
         else:
             self.con.set(key,value)
 
